@@ -1,0 +1,462 @@
+---
+title: Configuration
+url: Configuration
+layout: page
+---
+
+<p>
+    Logid uses a standard libconfig-style config file stored in <code>/etc/logid.cfg</code> by default (although you
+    launch logid with
+    the -c option to change it).
+</p>
+
+<p>
+    The config style may change in the future, however backwards-compatibility will be maintained.
+</p>
+
+<p>
+    For a sample config, see <a href="https://github.com/PixlOne/logiops/blob/master/logid.example.cfg"
+        target="_blank">logid.example.cfg</a>.
+</p>
+
+<p>
+    <code>:</code> and <code>=</code> are used for defining variables and are interchangeable. (e.g.
+    <code>name: "foo";</code> is the same as <code>name =
+"foo";</code>)
+</p>
+
+<h3>
+    Ignoring Devices
+</h3>
+<p>
+    Devices can be ignored from being detected and used in logid. To ignore a device, create a field called
+    <code>ignore</code> as an array of the PIDs of the devices you want to ignore. e.g. <code>ignore: [0x00a7]</code>
+</p>
+
+
+<h3>Defining Devices</h3>
+Devices are defined in an array field called <code>devices</code>. This array consists of objects that define a device.
+
+e.g. <code>devices: ( { device object }, { device object } ... );</code>
+
+The following are a list of fields that a device object contains.
+<ul>
+    <li>
+        <strong>name</strong>
+        This is a required string field that defines the name of the device. To get the name of the device, launch logid
+        with the device connected and it should print out a message with the device name. (e.g.
+        <code>name: "MX Master";</code>)
+    </li>
+    <li>
+        <strong>buttons</strong>
+        This is an optional array field that defines the mappings for buttons.
+
+        e.g. <code>buttons: ( { button object }, { button object } ... );</code>
+        <ul>
+            Button Objects
+            <li>
+                <strong>cid</strong>
+                This is a required integer field that defines the Control ID of the button that is being remapped. (e.g.
+                <code>cid: 0xc4;</code>)
+            </li>
+            <li>
+                <strong>action</strong>
+                This is a required object field that defines the new action of the button. (e.g.
+                <code>action: { ... };</code> )
+            </li>
+            Refer to the actions section for more information.
+        </ul>
+    </li>
+
+    <li>
+        <strong>dpi</strong>
+        This is an optional integer/array field that defines the DPI for a mouse that supports adjustable DPI. (e.g.
+        <code>dpi:
+        1000;</code>)
+
+        If your mouse has multiple sensors, you may define separate DPIs for those sensors by using an array and placing
+        the
+        value in the sensor's index (e.g. sensor 0: 1000 dpi, sensor 1: 800 dpi -> <code>dpi: [1000, 800]</code>)
+
+    </li>
+
+    <li>
+        <strong>smartshift</strong>
+        This is an optional object field that defines the SmartShift settings for a mouse that supports it.
+
+        <code>
+        smartshift:
+        {
+        on: true;
+        threshold: 30;
+        default_threshold: 30;
+        };
+        </code>
+
+    </li>
+
+    <ul>
+        <li>
+            <strong>on</strong>
+            This is an optional boolean field that defines whether SmartShift should be activated. (<code>true</code>
+            for
+            SmartShift,
+            <code>false</code>
+            for free-spin).
+
+        </li>
+
+        <li>
+            <strong>threshold</strong>
+            This is an optional integer field between 1-255 that defines the threshold required to change the SmartShift
+            wheel to
+            free-spin.
+
+        </li>
+
+        <li>
+            <strong>default_threshold</strong>
+            This is an optional integer field between 1-255 that defines the mouse's default threshold required to
+            change
+            the
+            SmartShift wheel to free-spin.
+
+        </li>
+    </ul>
+
+    <li>
+        <strong>hiresscroll</strong>
+        This is an optional object field that defines the HiRes mouse-scrolling settings for a device that supports it.
+
+        <code>
+        hiresscroll:
+        {
+        hires: true;
+        invert: false;
+        target: false;
+        };
+        </code>
+    </li>
+
+
+    <ul>
+        <li>
+            <strong>hires</strong>
+            This is an optional boolean field that defines whether the mouse wheel should be high resolution or not.
+
+        </li>
+
+        <li><strong>invert</strong>
+            This is an optional boolean field that defines whether to invert the mouse wheel.
+
+        </li>
+
+        <li><strong>target</strong>
+            This is an optional boolean field that defines whether mousewheel events should send as an HID++
+            notification or
+            work
+            normally (<code>true</code> for HID++ notification, <code>false</code> for normal usage). This option must
+            be set to true to remap
+            the
+            scroll
+            wheel action.
+
+        </li>
+        <li><strong>up</strong>
+            This is a gesture that defines the action that will be taken when the scroll wheel is moved up (down if
+            inverted). Refer
+            to the Actions/Gestures section for further info. To function, this field requires target to be enabled.
+
+        </li>
+
+        <li><strong>down</strong>
+            This is a gesture that defines the action that will be taken when the scroll wheel is moved down (up if
+            inverted). Refer
+            to the Actions/Gestures section for further info. To function, this field requires target to be enabled.
+
+        </li>
+    </ul>
+
+
+    <li><strong>thumbwheel</strong>
+        This is an optional object field that defines the thumb wheel settings on a device that supports it (e.g. MX
+        Master 3).
+
+        Some devices will not support the proxy, touch, and tap fields. Thumb wheel capabilities can be determined by
+        running
+        logid in debug mode and looking at the output.
+
+
+        <ul>
+            <li><strong>divert</strong>
+                This is a boolean field that determines whether the thumb wheel should be handled by logid
+                (<code>true</code>) or
+                the
+                OS
+                (<code>false</code>).
+
+            </li>
+
+            <li><strong>invert</strong>
+                This is a boolean field that determines whether the thumb wheel's scrolling should be diverted.
+            </li>
+
+            <li><strong>left</strong>
+                This is an optional gesture that defines the action that will be taken when the scroll wheel is moved
+                left
+                (right if
+                inverted). Refer to the Actions/Gestures section for further info. To function, this field requires
+                divert
+                to be
+                enabled.
+
+            </li>
+
+            <li><strong>right</strong>
+                This is an optional gesture that defines the action that will be taken when the scroll wheel is moved
+                right
+                (left if
+                inverted). Refer to the Actions/Gestures section for further info. To function, this field requires
+                divert
+                to be
+                enabled.
+
+            </li>
+
+            <li><strong>proxy</strong>
+                This is an optional action that defines what will occur when the user is in proximity of the thumb
+                wheel.
+                (will be
+                pressed upon entering proximity, released upon leaving). Refer to the Actions section for further info.
+
+            </li>
+
+            <li><strong>touch</strong>
+                This is an optional action that defines what will occur when the user touches the thumb wheel. (will be
+                pressed upon
+                touching the thumb wheel, released upon letting go). Refer to the Actions section for further info.
+
+            </li>
+
+            <li><strong>tap</strong>
+                This is an optional action that defines what will occur when the user taps the thumb wheel once.
+                (Pressed
+                and
+                immediately released after tap). Refer to the Actions section for further info.
+
+            </li>
+        </ul>
+
+    </li>
+
+    <li><strong>Actions</strong>
+
+
+        <ul>
+            <li><strong>type</strong>
+                This is a required string field that defines the type of action. (e.g. <code>type: "None";</code>). The
+                following
+                is a list of possible actions with their additional fields.
+
+                <ul>
+
+                    <li><strong>None</strong>
+                        This does nothing. There are no additional fields.
+
+                    </li>
+
+                    <li><strong>Keypress </strong>
+                        This maps press and release events of a button to a list of keys/buttons. <ul>
+                            <li><strong>keys </strong>
+                                This is a required string/integer array/list field that defines the keys to be
+                                pressed/released. For a list of key/button strings, refer to <a
+                                    href="https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h"
+                                    target="_blank">linux/input-event-codes.h</a>.
+                                (e.g. <code>keys: ["KEY_A", "KEY_B"];</code>). Alternatively, you may use integer
+                                keycodes to
+                                define the keys. Please note that these event codes work in a US (QWERTY) keyboard
+                                layout. If you have a locale set that does not use this keyboard layout, please map it
+                                to whatever key it would be on a QWERTY keyboard. (e.g. "KEY_Z" on a QWERTZ layout
+                                should be "KEY_Y")
+
+                            </li>
+                        </ul>
+
+                    </li>
+
+                    <li><strong>Gestures </strong>
+                        This action disables mouse movement while the button is pressed and allows you to
+                        assign actions for each direction. The possible directions are <code>Up</code>,
+                        <code>Down</code>, <code>Left</code>, <code>Right</code>,
+                        and <code>None</code>. Note that any button can be used as a gesture button if the device
+                        supports
+                        gestures. Additionally, some scroll wheels can have their up/down or left/right scrolls mapped
+                        to some gestures. Gesture modes will state their scroll wheel compatibility in the
+                        documentation.
+
+                        <ul>
+                            <li><strong>gestures </strong>
+                                This is a required array of gesture objects that map a direction to a gesture
+                                mode and
+                                an action. e.g. <code>gestures: ( { gesture object }, { gesture object } ... );</code>
+                            </li>
+                            <li><strong>direction </strong>
+                                This is a required string field in a gesture object that defines the direction
+                                of the
+                                gesture. (e.g. <code>direction: "Up"</code>) </li>
+                            <li><strong>threshold </strong>
+                                This is an optional integer field that determines the number of pixels at
+                                which a
+                                gesture should activate. (e.g. <code>threshold: 50</code>). This value must be greater
+                                than 0. If
+                                not set
+                                or set to an invalid value, the threshold will default to 50 pixels. </li>
+                            <li><strong>mode </strong>
+                                This is an optional string field that defines the mode of the gesture. This field
+                                defaults
+                                to <code>OnRelease</code> if it is omitted. The following is a list of gesture modes:
+                                <ul>
+                                    <li><strong>NoPress </strong>
+                                        This mode does nothing. The <code>action</code> field is ignored when this mode
+                                        is used.
+                                        This
+                                        gesture is compatible with scroll </li> wheels. <li>OnRelease This mode presses
+                                        and
+                                        releases an
+                                        action when the gesture button is released. This gesture is not compatible with
+                                        scroll
+                                        wheels.
+                                    </li>
+                                    <li><strong>OnInterval </strong>
+                                        This mode presses and releases an action after the mouse is moved
+                                        every n
+                                        pixels (where n is the integer field <code>interval</code>). This gesture is
+                                        compatible
+                                        with scroll
+                                        wheels.</li>
+                                    <li><strong>OnThreshold </strong>
+                                        Activates once the <code>threshold</code> is met, and never again.
+                                    </li>
+                                    <li><strong>Axis </strong>
+                                        This mode maps a gesture movement to an axis. The axis is defined as a string
+                                        (e.g.
+                                        "REL_WHEEL") in the <code>axis</code> field and the multiplier for its movement
+                                        is
+                                        defined in the
+                                        <code>axis_multiplier</code> field. For a list of axis strings, refer to <a
+                                            href="https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h"
+                                            target="_blank">linux/input-event-codes.h</a>.
+                                        This gesture is compatible with scroll wheels.
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><strong>action </strong>
+                                This is a mandatory field that defines the action the gesture uses. This can be
+                                any
+                                action other than <code>Gestures</code>. Refer to the entire Actions section for more
+                                details.
+                            </li>
+
+                        </ul>
+
+                    </li>
+                    <li><strong>ToggleSmartShift </strong>
+                        This action toggles the SmartShift scrolling feature when pressed. There are no
+                        additional fields. </li>
+                    <li><strong>ToggleHiresScroll</strong>
+                        This action toggles high resolution scrolling when pressed. There are no additional fields.
+
+                    </li>
+
+                    <li><strong>CycleDPI</strong>
+                        This action cycles between the given DPIs.
+                        <ul>
+
+                            <li><strong>dpis</strong>
+                                This is a mandatory integer array field that defines what DPIs to cycle through. (e.g.
+                                <code>dpis:
+                                [800,
+                                1000,
+                                1200];</code>)
+
+                            </li>
+
+                            <li><strong>sensor</strong>
+                                This is an optional field that will determine what sensor the DPI will switch on. This
+                                value
+                                defaults to
+                                0.
+                                In
+                                almost
+                                all cases, this does not need to be used.
+
+                            </li>
+                        </ul>
+
+                    </li>
+
+
+                    <li><strong>ChangeDPI</strong>
+                        This action increments the DPI by the value given in the <code>inc</code>.
+                        <ul>
+                            <li><strong>inc</strong>
+                                This is an integer array field that defines what to increase the DPI by.
+
+                            </li>
+
+                            <li><strong>sensor</strong>
+                                See the CycleDPI <code>sensor</code> field.
+
+                            </li>
+                        </ul>
+
+                    </li>
+
+
+                    <li><strong>ChangeHost</strong>
+                        This action changes the host to a specified host if the device supports changing hosts.
+
+                        <ul>
+                            <li><strong>host </strong>
+                                This field may either be an integer representing the host number (one-indexed, as
+                                shown on
+                                the bottom of the mouse), "next" to go to the next host number, or "prev"/"previous" to
+                                go to
+                                the previous host number. (e.g. <code>host = 2;</code> or <code>host = "next";</code>).
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </li>
+
+        </ul>
+    </li>
+
+</ul>
+<h3>Miscellaneous</h3>
+
+<ul>
+    <li>
+        <strong>workers</strong>
+        This is an optional field that determines the number of worker threads that logid's workqueue uses. (e.g.
+        <code>workers =
+        4;</code>)
+
+        This defaults to 4 if no value is given.
+
+        **Warning:** Decreasing the worker thread count is likely to result in reduced performance and
+        counter-intuitively,
+        more
+        threads being created (since the workqueue will run a task in a new thread if it is busy for more than
+        500ms).
+
+    </li>
+    <li>
+        <strong>io_timeout </strong>
+        This is an optional field that determines how how many milliseconds device I/O will wait for
+        before
+        timing out. (e.g. <code>timeout = 2000;</code>) This defaults to 2000 ms if left blank.
+    </li>
+
+</ul>
