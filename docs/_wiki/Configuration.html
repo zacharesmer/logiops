@@ -248,185 +248,183 @@ The following are a list of fields that a device object contains.
         </ul>
 
     </li>
+</ul>
 
-    <li><strong>Actions</strong>
+<h3>Actions</h3>
 
+
+<ul>
+    <li><strong>type</strong>
+        This is a required string field that defines the type of action. (e.g. <code>type: "None";</code>). The
+        following
+        is a list of possible actions with their additional fields.
 
         <ul>
-            <li><strong>type</strong>
-                This is a required string field that defines the type of action. (e.g. <code>type: "None";</code>). The
-                following
-                is a list of possible actions with their additional fields.
+
+            <li><strong>None</strong>
+                This does nothing. There are no additional fields.
+
+            </li>
+
+            <li><strong>Keypress </strong>
+                This maps press and release events of a button to a list of keys/buttons. <ul>
+                    <li><strong>keys </strong>
+                        This is a required string/integer array/list field that defines the keys to be
+                        pressed/released. For a list of key/button strings, refer to <a
+                            href="https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h"
+                            target="_blank">linux/input-event-codes.h</a>.
+                        (e.g. <code>keys: ["KEY_A", "KEY_B"];</code>). Alternatively, you may use integer
+                        keycodes to
+                        define the keys. Please note that these event codes work in a US (QWERTY) keyboard
+                        layout. If you have a locale set that does not use this keyboard layout, please map it
+                        to whatever key it would be on a QWERTY keyboard. (e.g. "KEY_Z" on a QWERTZ layout
+                        should be "KEY_Y")
+
+                    </li>
+                </ul>
+
+            </li>
+
+            <li><strong>Gestures </strong>
+                This action disables mouse movement while the button is pressed and allows you to
+                assign actions for each direction. The possible directions are <code>Up</code>,
+                <code>Down</code>, <code>Left</code>, <code>Right</code>,
+                and <code>None</code>. Note that any button can be used as a gesture button if the device
+                supports
+                gestures. Additionally, some scroll wheels can have their up/down or left/right scrolls mapped
+                to some gestures. Gesture modes will state their scroll wheel compatibility in the
+                documentation.
 
                 <ul>
-
-                    <li><strong>None</strong>
-                        This does nothing. There are no additional fields.
-
+                    <li><strong>gestures </strong>
+                        This is a required array of gesture objects that map a direction to a gesture
+                        mode and
+                        an action. e.g. <code>gestures: ( { gesture object }, { gesture object } ... );</code>
                     </li>
-
-                    <li><strong>Keypress </strong>
-                        This maps press and release events of a button to a list of keys/buttons. <ul>
-                            <li><strong>keys </strong>
-                                This is a required string/integer array/list field that defines the keys to be
-                                pressed/released. For a list of key/button strings, refer to <a
+                    <li><strong>direction </strong>
+                        This is a required string field in a gesture object that defines the direction
+                        of the
+                        gesture. (e.g. <code>direction: "Up"</code>) </li>
+                    <li><strong>threshold </strong>
+                        This is an optional integer field that determines the number of pixels at
+                        which a
+                        gesture should activate. (e.g. <code>threshold: 50</code>). This value must be greater
+                        than 0. If
+                        not set
+                        or set to an invalid value, the threshold will default to 50 pixels. </li>
+                    <li><strong>mode </strong>
+                        This is an optional string field that defines the mode of the gesture. This field
+                        defaults
+                        to <code>OnRelease</code> if it is omitted. The following is a list of gesture modes:
+                        <ul>
+                            <li><strong>NoPress </strong>
+                                This mode does nothing. The <code>action</code> field is ignored when this mode
+                                is used.
+                                This
+                                gesture is compatible with scroll </li> wheels. <li>OnRelease This mode presses
+                                and
+                                releases an
+                                action when the gesture button is released. This gesture is not compatible with
+                                scroll
+                                wheels.
+                            </li>
+                            <li><strong>OnInterval </strong>
+                                This mode presses and releases an action after the mouse is moved
+                                every n
+                                pixels (where n is the integer field <code>interval</code>). This gesture is
+                                compatible
+                                with scroll
+                                wheels.</li>
+                            <li><strong>OnThreshold </strong>
+                                Activates once the <code>threshold</code> is met, and never again.
+                            </li>
+                            <li><strong>Axis </strong>
+                                This mode maps a gesture movement to an axis. The axis is defined as a string
+                                (e.g.
+                                "REL_WHEEL") in the <code>axis</code> field and the multiplier for its movement
+                                is
+                                defined in the
+                                <code>axis_multiplier</code> field. For a list of axis strings, refer to <a
                                     href="https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h"
                                     target="_blank">linux/input-event-codes.h</a>.
-                                (e.g. <code>keys: ["KEY_A", "KEY_B"];</code>). Alternatively, you may use integer
-                                keycodes to
-                                define the keys. Please note that these event codes work in a US (QWERTY) keyboard
-                                layout. If you have a locale set that does not use this keyboard layout, please map it
-                                to whatever key it would be on a QWERTY keyboard. (e.g. "KEY_Z" on a QWERTZ layout
-                                should be "KEY_Y")
-
+                                This gesture is compatible with scroll wheels.
                             </li>
                         </ul>
-
+                    </li>
+                    <li><strong>action </strong>
+                        This is a mandatory field that defines the action the gesture uses. This can be
+                        any
+                        action other than <code>Gestures</code>. Refer to the entire Actions section for more
+                        details.
                     </li>
 
-                    <li><strong>Gestures </strong>
-                        This action disables mouse movement while the button is pressed and allows you to
-                        assign actions for each direction. The possible directions are <code>Up</code>,
-                        <code>Down</code>, <code>Left</code>, <code>Right</code>,
-                        and <code>None</code>. Note that any button can be used as a gesture button if the device
-                        supports
-                        gestures. Additionally, some scroll wheels can have their up/down or left/right scrolls mapped
-                        to some gestures. Gesture modes will state their scroll wheel compatibility in the
-                        documentation.
+                </ul>
 
-                        <ul>
-                            <li><strong>gestures </strong>
-                                This is a required array of gesture objects that map a direction to a gesture
-                                mode and
-                                an action. e.g. <code>gestures: ( { gesture object }, { gesture object } ... );</code>
-                            </li>
-                            <li><strong>direction </strong>
-                                This is a required string field in a gesture object that defines the direction
-                                of the
-                                gesture. (e.g. <code>direction: "Up"</code>) </li>
-                            <li><strong>threshold </strong>
-                                This is an optional integer field that determines the number of pixels at
-                                which a
-                                gesture should activate. (e.g. <code>threshold: 50</code>). This value must be greater
-                                than 0. If
-                                not set
-                                or set to an invalid value, the threshold will default to 50 pixels. </li>
-                            <li><strong>mode </strong>
-                                This is an optional string field that defines the mode of the gesture. This field
-                                defaults
-                                to <code>OnRelease</code> if it is omitted. The following is a list of gesture modes:
-                                <ul>
-                                    <li><strong>NoPress </strong>
-                                        This mode does nothing. The <code>action</code> field is ignored when this mode
-                                        is used.
-                                        This
-                                        gesture is compatible with scroll </li> wheels. <li>OnRelease This mode presses
-                                        and
-                                        releases an
-                                        action when the gesture button is released. This gesture is not compatible with
-                                        scroll
-                                        wheels.
-                                    </li>
-                                    <li><strong>OnInterval </strong>
-                                        This mode presses and releases an action after the mouse is moved
-                                        every n
-                                        pixels (where n is the integer field <code>interval</code>). This gesture is
-                                        compatible
-                                        with scroll
-                                        wheels.</li>
-                                    <li><strong>OnThreshold </strong>
-                                        Activates once the <code>threshold</code> is met, and never again.
-                                    </li>
-                                    <li><strong>Axis </strong>
-                                        This mode maps a gesture movement to an axis. The axis is defined as a string
-                                        (e.g.
-                                        "REL_WHEEL") in the <code>axis</code> field and the multiplier for its movement
-                                        is
-                                        defined in the
-                                        <code>axis_multiplier</code> field. For a list of axis strings, refer to <a
-                                            href="https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h"
-                                            target="_blank">linux/input-event-codes.h</a>.
-                                        This gesture is compatible with scroll wheels.
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><strong>action </strong>
-                                This is a mandatory field that defines the action the gesture uses. This can be
-                                any
-                                action other than <code>Gestures</code>. Refer to the entire Actions section for more
-                                details.
-                            </li>
+            </li>
+            <li><strong>ToggleSmartShift </strong>
+                This action toggles the SmartShift scrolling feature when pressed. There are no
+                additional fields. </li>
+            <li><strong>ToggleHiresScroll</strong>
+                This action toggles high resolution scrolling when pressed. There are no additional fields.
 
-                        </ul>
+            </li>
 
-                    </li>
-                    <li><strong>ToggleSmartShift </strong>
-                        This action toggles the SmartShift scrolling feature when pressed. There are no
-                        additional fields. </li>
-                    <li><strong>ToggleHiresScroll</strong>
-                        This action toggles high resolution scrolling when pressed. There are no additional fields.
+            <li><strong>CycleDPI</strong>
+                This action cycles between the given DPIs.
+                <ul>
 
-                    </li>
-
-                    <li><strong>CycleDPI</strong>
-                        This action cycles between the given DPIs.
-                        <ul>
-
-                            <li><strong>dpis</strong>
-                                This is a mandatory integer array field that defines what DPIs to cycle through. (e.g.
-                                <code>dpis:
+                    <li><strong>dpis</strong>
+                        This is a mandatory integer array field that defines what DPIs to cycle through. (e.g.
+                        <code>dpis:
                                 [800,
                                 1000,
                                 1200];</code>)
 
-                            </li>
+                    </li>
 
-                            <li><strong>sensor</strong>
-                                This is an optional field that will determine what sensor the DPI will switch on. This
-                                value
-                                defaults to
-                                0.
-                                In
-                                almost
-                                all cases, this does not need to be used.
+                    <li><strong>sensor</strong>
+                        This is an optional field that will determine what sensor the DPI will switch on. This
+                        value
+                        defaults to
+                        0.
+                        In
+                        almost
+                        all cases, this does not need to be used.
 
-                            </li>
-                        </ul>
+                    </li>
+                </ul>
+
+            </li>
+
+
+            <li><strong>ChangeDPI</strong>
+                This action increments the DPI by the value given in the <code>inc</code>.
+                <ul>
+                    <li><strong>inc</strong>
+                        This is an integer array field that defines what to increase the DPI by.
 
                     </li>
 
-
-                    <li><strong>ChangeDPI</strong>
-                        This action increments the DPI by the value given in the <code>inc</code>.
-                        <ul>
-                            <li><strong>inc</strong>
-                                This is an integer array field that defines what to increase the DPI by.
-
-                            </li>
-
-                            <li><strong>sensor</strong>
-                                See the CycleDPI <code>sensor</code> field.
-
-                            </li>
-                        </ul>
+                    <li><strong>sensor</strong>
+                        See the CycleDPI <code>sensor</code> field.
 
                     </li>
+                </ul>
+
+            </li>
 
 
-                    <li><strong>ChangeHost</strong>
-                        This action changes the host to a specified host if the device supports changing hosts.
+            <li><strong>ChangeHost</strong>
+                This action changes the host to a specified host if the device supports changing hosts.
 
-                        <ul>
-                            <li><strong>host </strong>
-                                This field may either be an integer representing the host number (one-indexed, as
-                                shown on
-                                the bottom of the mouse), "next" to go to the next host number, or "prev"/"previous" to
-                                go to
-                                the previous host number. (e.g. <code>host = 2;</code> or <code>host = "next";</code>).
-                            </li>
-                        </ul>
+                <ul>
+                    <li><strong>host </strong>
+                        This field may either be an integer representing the host number (one-indexed, as
+                        shown on
+                        the bottom of the mouse), "next" to go to the next host number, or "prev"/"previous" to
+                        go to
+                        the previous host number. (e.g. <code>host = 2;</code> or <code>host = "next";</code>).
                     </li>
-
                 </ul>
             </li>
 
@@ -434,6 +432,7 @@ The following are a list of fields that a device object contains.
     </li>
 
 </ul>
+
 <h3>Miscellaneous</h3>
 
 <ul>
